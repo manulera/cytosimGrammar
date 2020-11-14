@@ -1,0 +1,95 @@
+{	patterns = (
+		{	include = '#title'; },
+		{	include = '#keyword'; },
+		{	include = '#section'; },
+		{	include = '#comment'; },
+		{	include = '#python_section'; },
+	);
+	repository = {
+		comment = {
+			begin = '([^\n]*)(?=%[^%])';
+			end = '(?!\G)';
+			captures = { 1 = { name = 'punctuation.whitespace.comment.leading.python'; }; };
+			patterns = (
+				{	name = 'comment.line.number-sign.python';
+					begin = '%';
+					end = '\n';
+					captures = { 1 = { name = 'comment.line.number-sign.python'; }; };
+				},
+			);
+		};
+		keyword = {
+			begin = '^\s*(set|new|change|run|delete|import|report|export|mark|repeat|cut|call|read|end)(?!\w)';
+			end = '\n';
+			captures = { 1 = { name = 'storage.type.string.python'; }; };
+			patterns = (
+				{	include = '#python_section'; },
+				{	name = 'support.type.python';
+					begin = '(?<!\w)(\d+)?\s*(hand|simul|space|fieldbase|event|fiber|bead|solid|sphere|single|double|couple|aster|fake|bundle|nucleus)(?!\w)';
+					end = '(?!\G)';
+					captures = {
+						1 = { name = 'support.type.python'; };
+						2 = { name = 'constant.character.escape.hex.python'; };
+					};
+				},
+			);
+			
+		};
+		python_section = {
+			begin = '(\[\[)';
+			end = '(\]\])';
+			captures = { 1 = { name = 'keyword.control.flow.python'; }; };
+			patterns = ( { include = 'source.python'; } );
+		};
+		section = {
+			name = 'support.type.python';
+			patterns = (
+				{	begin = '\{';
+					end = '\}';
+					patterns = (
+						{	include = '#python_section'; },
+						{	name = 'punctuation.whitespace.comment.leading.python';
+							begin = '^\s*(\w*)\s*(\=)';
+							end = '(?!\G)';
+							captures = {
+								1 = { name = 'keyword.control.flow.python'; };
+								2 = { name = 'punctuation.whitespace.comment.leading.python'; };
+							};
+							patterns = ( { include = '#python_section'; } );
+						},
+						{	patterns = (
+								{	name = 'punctuation.whitespace.comment.leading.python';
+									begin = '\(';
+									end = '\)';
+									patterns = (
+										{	include = '#python_section'; },
+										{	match = '(\w*)\s*\=';
+											captures = {
+												1 = { name = 'support.type.python'; };
+												2 = { name = 'punctuation.whitespace.comment.leading.python'; };
+												3 = { name = 'punctuation.whitespace.comment.leading.python'; };
+											};
+										},
+									);
+								},
+							);
+						},
+						{	patterns = ( { include = '#comment'; } ); },
+					);
+				},
+			);
+		};
+		title = {
+			begin = '(^[^\n]*)(?=%%)';
+			end = '(?!\G)';
+			beginCaptures = { 1 = { name = 'string.quoted.double.block.unicode-raw-regex.python'; }; };
+			patterns = (
+				{	name = 'string.quoted.double.block.unicode-raw-regex.python';
+					begin = '%%';
+					end = '\n';
+					beginCaptures = { 0 = { name = 'string.quoted.double.block.unicode-raw-regex.python'; }; };
+				},
+			);
+		};
+	};
+}
